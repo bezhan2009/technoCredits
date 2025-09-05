@@ -6,15 +6,13 @@ import (
 
 type User struct {
 	gorm.Model
+	ID           uint   `gorm:"primaryKey"`
+	FullName     string `gorm:"column:full_name"`
+	RoleID       uint   `gorm:"primaryKey;column:role_id"`
+	PasswordHash string `gorm:"column:password_hash"`
+	Email        string `gorm:"column:email"`
+	Login        string `gorm:"column:login"`
 
-	Username string `json:"username" gorm:"unique;not null"`
-	Password string `json:"-" gorm:"size:255;not null"`
-
-	RoleID int  `json:"role_id" gorm:"not null"`
-	Role   Role `json:"-" gorm:"foreignKey:RoleID;not null"`
-}
-
-type Role struct {
-	ID   int    `gorm:"primaryKey"`
-	Name string `gorm:"type:varchar(20);not null;unique"`
+	Role   Role
+	Groups []Group `gorm:"many2many:groups_member;foreignKey:ID;references:ID"`
 }
