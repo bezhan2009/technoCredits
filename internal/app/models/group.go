@@ -1,18 +1,22 @@
 package models
 
-import (
-	"gorm.io/gorm"
-)
+import "time"
 
+// Group представляет таблицу groups.
 type Group struct {
-	gorm.Model
-	ID      uint   `gorm:"primaryKey"`
-	Name    string `gorm:"column:name"`
-	OwnerID uint   `gorm:"column:owner_id"`
+	ID        uint   `gorm:"primaryKey"`
+	Name      string `gorm:"type:varchar(255);not null"`
+	OwnerID   uint   `gorm:"not null"`
+	Owner     User   `gorm:"foreignKey:OwnerID"`
+	CreatedAt time.Time
+}
 
-	Owner User `gorm:"foreignKey:OwnerID;references:ID"`
-
-	Users []User `gorm:"many2many:groups_member;foreignKey:ID;references:ID"`
-
-	CardsExpenses []CardsExpense `gorm:"foreignKey:GroupID;references:ID"`
+// GroupMember представляет таблицу groups_member, которая является связующей таблицей для отношений многие ко многим.
+type GroupMember struct {
+	GroupID  uint      `gorm:"primaryKey"`
+	UserID   uint      `gorm:"primaryKey"`
+	Group    Group     `gorm:"foreignKey:GroupID"`
+	User     User      `gorm:"foreignKey:UserID"`
+	Role     string    `gorm:"type:varchar(255)"`
+	JoinedAt time.Time `gorm:"not null"`
 }
