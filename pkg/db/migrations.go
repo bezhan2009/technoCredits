@@ -17,6 +17,12 @@ func Migrate() error {
 	err := dbConn.AutoMigrate(
 		models.User{},
 		models.Role{},
+		models.Group{},
+		models.GroupMember{},
+		models.CardsExpense{},
+		models.CardsExpensePayer{},
+		models.CardsExpenseUser{},
+		models.Settlement{},
 	)
 
 	if err != nil {
