@@ -1,0 +1,12 @@
+# IDE Files
+.idea
+.vs
+
+# Logs
+logs
+
+# Security Files
+.env
+*.exe
+*.pem
+docs
