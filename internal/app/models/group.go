@@ -13,10 +13,10 @@ type Group struct {
 
 // GroupMember представляет таблицу groups_member, которая является связующей таблицей для отношений многие ко многим.
 type GroupMember struct {
-	GroupID  uint      `gorm:"primaryKey"`
-	UserID   uint      `gorm:"primaryKey"`
-	Group    Group     `gorm:"foreignKey:GroupID"`
-	User     User      `gorm:"foreignKey:UserID"`
+	GroupID  uint      `gorm:"primaryKey;autoIncrement:false"`
+	UserID   uint      `gorm:"primaryKey;autoIncrement:false"`
+	Group    Group     `gorm:"foreignKey:GroupID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	User     User      `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Role     string    `gorm:"type:varchar(255)"`
 	JoinedAt time.Time `gorm:"not null"`
 }

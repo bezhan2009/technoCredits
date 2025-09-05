@@ -1,10 +1,10 @@
 package middlewares
 
 import (
-	"Gotenv/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
+	"technoCredits/pkg/utils"
 )
 
 const (
