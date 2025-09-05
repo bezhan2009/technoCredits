@@ -20,7 +20,9 @@ func Migrate() error {
 		models.Group{},
 		models.GroupMember{},
 		models.CardsExpense{},
+		models.CardsExpensePayer{},
 		models.CardsExpenseUser{},
+		models.Settlement{},
 	)
 
 	if err != nil {
