@@ -58,7 +58,7 @@ func SignUp(c *gin.Context) {
 		models.User{
 			Username: user.Username,
 			Password: user.Password,
-			RoleID:   int(user.RoleID),
+			RoleID:   user.RoleID,
 		},
 	)
 	if err != nil {
