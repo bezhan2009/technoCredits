@@ -52,10 +52,10 @@ func main() {
 		panic(err)
 	}
 
-	//err = db.Migrate()
-	//if err != nil {
-	//	panic(err)
-	//}
+	err = db.Migrate()
+	if err != nil {
+		panic(err)
+	}
 
 	err = db.InitializeRedis(security.AppSettings.RedisParams)
 	if err != nil {

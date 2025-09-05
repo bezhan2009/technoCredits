@@ -3,6 +3,7 @@ package db
 import (
 	"errors"
 	"technoCredits/internal/app/models"
+	"technoCredits/internal/app/models/seeds"
 	"technoCredits/pkg/logger"
 )
 
@@ -20,6 +21,13 @@ func Migrate() error {
 
 	if err != nil {
 		logger.Error.Printf("[db.Migrate] Error migrating tables: %v", err)
+
+		return err
+	}
+
+	err = seeds.SeedRoles(dbConn)
+	if err != nil {
+		logger.Error.Printf("[db.Migrate] Error seeding roles: %v", err)
 
 		return err
 	}
