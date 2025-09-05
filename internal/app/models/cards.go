@@ -2,7 +2,6 @@ package models
 
 import "time"
 
-// CardsExpense представляет таблицу cards_expenses.
 type CardsExpense struct {
 	ID          uint  `gorm:"primaryKey"`
 	GroupID     uint  `gorm:"not null"`
@@ -15,7 +14,6 @@ type CardsExpense struct {
 	CreatedAt   time.Time
 }
 
-// CardsExpensePayer представляет таблицу cards_expenses_payers.
 type CardsExpensePayer struct {
 	ID             uint         `gorm:"primaryKey"`
 	CardsExpenseID uint         `gorm:"not null"`
@@ -26,7 +24,6 @@ type CardsExpensePayer struct {
 	PaidAt         time.Time
 }
 
-// CardsExpenseUser представляет таблицу cards_expenses_users.
 type CardsExpenseUser struct {
 	ID             uint         `gorm:"primaryKey"`
 	CardsExpenseID uint         `gorm:"not null"`
