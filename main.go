@@ -20,7 +20,6 @@ import (
 // @version 1.0.0
 
 // @description API Server for portal TechnoCredits
-// @host localhost:9090
 // @BasePath /
 
 // @securityDefinitions.apikey ApiKeyAuth
