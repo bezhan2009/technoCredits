@@ -12,6 +12,7 @@ import (
 func handleBadRequestErrors(err error) bool {
 	return errors.Is(err, errs.ErrUsernameUniquenessFailed) ||
 		errors.Is(err, errs.ErrUsernameIsRequired) ||
+		errors.Is(err, errs.ErrEmailUniquenessFailed) ||
 		errors.Is(err, errs.ErrPasswordIsRequired) ||
 		errors.Is(err, errs.ErrRoleIsRequired) ||
 		errors.Is(err, errs.ErrWrongRoleID) ||
