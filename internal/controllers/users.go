@@ -6,8 +6,23 @@ import (
 	"technoCredits/internal/app/models"
 	"technoCredits/internal/app/service"
 	"technoCredits/internal/controllers/middlewares"
+	"technoCredits/internal/repository"
 	"technoCredits/pkg/errs"
 )
+
+func GetAllUsers(c *gin.Context) {
+	search := c.Query("search")
+
+	users, err := repository.GetAllUsers(search)
+	if err != nil {
+		HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"users": users,
+	})
+}
 
 func GetMyDataUser(c *gin.Context) {
 	userID := c.GetUint(middlewares.UserIDCtx)
