@@ -13,6 +13,13 @@ func handleBadRequestErrors(err error) bool {
 	return errors.Is(err, errs.ErrUsernameUniquenessFailed) ||
 		errors.Is(err, errs.ErrUsernameIsRequired) ||
 		errors.Is(err, errs.ErrPasswordIsRequired) ||
+		errors.Is(err, errs.ErrCardExpenseIDNotDFound) ||
+		errors.Is(err, errs.ErrCardExpenseGroupIDNotFound) ||
+		errors.Is(err, errs.ErrCardExpensePayerPaidAmountNotFound) ||
+		errors.Is(err, errs.ErrCardExpenseUserIDNotFound) ||
+		errors.Is(err, errs.ErrCardExpenseIDNotFound) ||
+		errors.Is(err, errs.ErrCardExpenseDescriptionNotFound) ||
+		errors.Is(err, errs.ErrCardExpenseTotalAmountNotFound) ||
 		errors.Is(err, errs.ErrRoleIsRequired) ||
 		errors.Is(err, errs.ErrWrongRoleID) ||
 		errors.Is(err, errs.ErrInvalidVacancyID) ||
