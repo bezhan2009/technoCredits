@@ -80,7 +80,7 @@ func GetAllUsers(search string) (users []models.User, err error) {
 	return users, nil
 }
 
-func GetUserByID(id string) (user models.User, err error) {
+func GetUserByID(id uint) (user models.User, err error) {
 	err = db.GetDBConn().
 		Where("id = ?", id).
 		First(&user).Error
@@ -150,6 +150,16 @@ func GetUserByUsernameAndPassword(username string, password string) (user models
 	}
 
 	return user, nil
+}
+
+func UpdateUser(user models.User) (err error) {
+	if err = db.GetDBConn().Model(models.User{}).Where("id = ?", user.ID).Updates(&user).Error; err != nil {
+		logger.Error.Printf("[repository.UpdateUserStruct] Error while updating user: %v", err)
+
+		return TranslateGormError(err)
+	}
+
+	return nil
 }
 
 func DeleteUserByID(userID uint) (err error) {
