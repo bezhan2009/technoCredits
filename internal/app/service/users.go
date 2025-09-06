@@ -2,12 +2,22 @@ package service
 
 import (
 	"fmt"
+	"strings"
 	"technoCredits/internal/app/models"
 	"technoCredits/internal/repository"
 	"technoCredits/pkg/errs"
 	"technoCredits/pkg/logger"
 	"technoCredits/pkg/utils"
 )
+
+func GetUserByID(userID uint) (user models.User, err error) {
+	user, err = repository.GetUserByID(userID)
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
 
 func CreateUser(user models.User) (uint, error) {
 	usernameExists, emailExists, err := repository.UserExists(user.Username, user.Email)
@@ -40,4 +50,51 @@ func CreateUser(user models.User) (uint, error) {
 	}
 
 	return userDB.ID, nil
+}
+
+func UpdateUserPassword(userID uint, oldPassword, newPassword string) error {
+	newPassword = strings.TrimSpace(newPassword)
+	newPassword = utils.GenerateHash(newPassword)
+
+	oldPassword = strings.TrimSpace(oldPassword)
+	oldPassword = utils.GenerateHash(oldPassword)
+
+	user, err := GetUserByID(userID)
+	if err != nil {
+		return err
+	}
+
+	if user.Password != oldPassword {
+		return errs.ErrPermissionDenied
+	}
+
+	user.Password = newPassword
+	err = repository.UpdateUser(user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateUser(user models.User) (err error) {
+	userDB, err := GetUserByID(user.ID)
+	if err == nil {
+		user.Password = userDB.Password
+
+		if user.Username == userDB.Username {
+			user.Username = ""
+		}
+
+		if user.Email == userDB.Email {
+			user.Email = ""
+		}
+	}
+
+	err = repository.UpdateUser(user)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
