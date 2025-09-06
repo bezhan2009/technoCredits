@@ -58,6 +58,8 @@ func SignUp(c *gin.Context) {
 		models.User{
 			Username: user.Username,
 			Password: user.Password,
+			Email:    user.Email,
+			FullName: user.FullName,
 			RoleID:   user.RoleID,
 		},
 	)

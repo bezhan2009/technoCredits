@@ -106,19 +106,22 @@ func GetUserByUsername(username string) (*models.User, error) {
 	return &user, nil
 }
 
-func UserExists(username string) (bool, error) {
+func UserExists(username, email string) (bool, bool, error) {
 	users, err := GetAllUsers("")
 	if err != nil {
-		return false, err
+		return false, false, err
 	}
 
-	var usernameExists bool
+	var usernameExists, emailExists bool
 	for _, user := range users {
 		if user.Username == username {
 			usernameExists = true
 		}
+		if user.Email == email {
+			emailExists = true
+		}
 	}
-	return usernameExists, nil
+	return usernameExists, emailExists, nil
 }
 
 func CreateUser(user models.User) (userDB models.User, err error) {
