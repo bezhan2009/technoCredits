@@ -9,6 +9,10 @@ func GetAllCardsUser(month, year, userID, afterID int, search string) (cards []m
 	return repository.GetAllCardsUser(month, year, userID, afterID, search)
 }
 
+func GetCardExpenseByID(userID, cardExpenseID uint) (card models.CardsExpense, err error) {
+	return repository.GetCardExpenseByID(userID, cardExpenseID)
+}
+
 func CreateCardExpense(expense models.CardsExpense) (err error) {
 	return repository.CreateCardExpense(expense)
 }

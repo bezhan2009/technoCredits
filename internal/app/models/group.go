@@ -9,6 +9,8 @@ type Group struct {
 	OwnerID   uint   `gorm:"not null"`
 	Owner     User   `gorm:"foreignKey:OwnerID"`
 	CreatedAt time.Time
+
+	GroupMembers []GroupMember `gorm:"foreignKey:GroupID"`
 }
 
 // GroupMember представляет таблицу groups_member, которая является связующей таблицей для отношений многие ко многим.
