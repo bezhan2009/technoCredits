@@ -14,12 +14,12 @@ type Group struct {
 
 type GroupMember struct {
 	ID      uint  `gorm:"primaryKey"`
-	GroupID uint  `gorm:"primaryKey;autoIncrement:false"`
-	UserID  uint  `gorm:"primaryKey;autoIncrement:false"`
+	GroupID uint  `json:"group_id" gorm:"primaryKey;autoIncrement:false"`
+	UserID  uint  `json:"user_id" gorm:"primaryKey;autoIncrement:false"`
 	Group   Group `json:"-" gorm:"foreignKey:GroupID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	User    User  `json:"-" gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
-	RoleID uint `gorm:"not null"`
+	RoleID uint `json:"role_id" gorm:"not null"`
 	Role   Role `json:"-" gorm:"foreignKey:RoleID"`
 
 	JoinedAt time.Time `gorm:"not null"`
