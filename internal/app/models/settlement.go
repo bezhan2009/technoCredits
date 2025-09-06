@@ -5,13 +5,13 @@ import "time"
 type Settlement struct {
 	ID         uint    `gorm:"primaryKey"`
 	GroupID    uint    `gorm:"not null"`
-	Group      Group   `gorm:"foreignKey:GroupID"`
+	Group      Group   `json:"-" gorm:"foreignKey:GroupID"`
 	FromUserID uint    `gorm:"not null"`
-	FromUser   User    `gorm:"foreignKey:FromUserID"`
-	ToUserID   uint    `gorm:"not null"`
-	ToUser     User    `gorm:"foreignKey:ToUserID"`
-	Amount     float64 `gorm:"type:numeric"`
-	Currency   string  `gorm:"type:varchar(10)"`
+	FromUser   User    `json:"from_user" gorm:"foreignKey:FromUserID"`
+	ToUserID   uint    `json:"to_user_id" gorm:"not null"`
+	ToUser     User    `json:"-" gorm:"foreignKey:ToUserID"`
+	Amount     float64 `json:"amount" gorm:"type:numeric"`
+	Currency   string  `json:"currency" gorm:"type:varchar(10)"`
 	CreatedAt  time.Time
-	Note       string `gorm:"type:text"`
+	Note       string `json:"note" gorm:"type:text"`
 }

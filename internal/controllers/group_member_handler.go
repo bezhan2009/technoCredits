@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+	"technoCredits/internal/app/models"
 	"technoCredits/internal/app/service"
 )
 
@@ -22,27 +23,24 @@ func NewGroupMemberHandler(s *service.GroupMemberService) *GroupMemberHandler {
 // @Accept json
 // @Produce json
 // @Param groupID path int true "ID группы"
-// @Param member body object{user_id=int,role=string} true "Данные участника"
+// @Param member body object{user_id=int,group_id=int} true "Данные участника"
 // @Success 201 {object} map[string]string
 // @Failure 400 {object} map[string]string
 // @Security ApiKeyAuth
 // @Router /groups/{groupID}/members [post]
 func (h *GroupMemberHandler) AddMember(c *gin.Context) {
-	groupID, _ := strconv.Atoi(c.Param("groupID"))
+	groupID, _ := strconv.Atoi(c.Param("id"))
 
-	var req struct {
-		UserID uint   `json:"user_id"`
-		Role   string `json:"role"`
-	}
+	var groupMember models.GroupMember
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+	if err := c.ShouldBindJSON(&groupMember); err != nil {
+		HandleError(c, err)
 		return
 	}
 
-	err := h.Service.AddMember(uint(groupID), req.UserID, req.Role)
+	err := h.Service.AddMember(uint(groupID), groupMember.UserID, groupMember.RoleID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		HandleError(c, err)
 		return
 	}
 
@@ -58,13 +56,13 @@ func (h *GroupMemberHandler) AddMember(c *gin.Context) {
 // @Success 200 {array} object{group_id=int,user_id=int,role=string,joined_at=string}
 // @Failure 500 {object} map[string]string
 // @Security ApiKeyAuth
-// @Router /groups/{groupID}/members [get]
+// @Router /groups/{id}/members [get]
 func (h *GroupMemberHandler) GetMembers(c *gin.Context) {
-	groupID, _ := strconv.Atoi(c.Param("groupID"))
+	groupID, _ := strconv.Atoi(c.Param("id"))
 
 	members, err := h.Service.GetMembers(uint(groupID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		HandleError(c, err)
 		return
 	}
 
@@ -89,16 +87,16 @@ func (h *GroupMemberHandler) UpdateMemberRole(c *gin.Context) {
 	userID, _ := strconv.Atoi(c.Param("userID"))
 
 	var req struct {
-		Role string `json:"role"`
+		RoleID uint `json:"role_id"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		HandleError(c, err)
 		return
 	}
 
-	err := h.Service.UpdateMemberRole(uint(groupID), uint(userID), req.Role)
+	err := h.Service.UpdateMemberRole(uint(groupID), uint(userID), req.RoleID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		HandleError(c, err)
 		return
 	}
 
@@ -122,7 +120,8 @@ func (h *GroupMemberHandler) RemoveMember(c *gin.Context) {
 
 	err := h.Service.RemoveMember(uint(groupID), uint(userID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		HandleError(c, err)
+
 		return
 	}
 

@@ -18,11 +18,11 @@ type GormModel struct {
 // User представляет таблицу users.
 type User struct {
 	ID        uint   `gorm:"primaryKey"`
-	RoleID    uint   `gorm:"not null"`
-	Role      Role   `gorm:"foreignKey:RoleID"`
-	FullName  string `gorm:"type:varchar(255)"`
+	RoleID    uint   `json:"role_id" gorm:"not null"`
+	Role      Role   `json:"-" gorm:"foreignKey:RoleID"`
+	FullName  string `json:"full_name" gorm:"type:varchar(255)"`
 	Username  string `json:"username" gorm:"type:varchar(255)"`
-	Email     string `gorm:"type:varchar(255);unique;not null"`
+	Email     string `json:"email" gorm:"type:varchar(255);unique;not null"`
 	Password  string `json:"-"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
