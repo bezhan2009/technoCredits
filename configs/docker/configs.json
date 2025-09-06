@@ -24,6 +24,7 @@
       "http://localhost:3008",
       "http://localhost:3009",
       "http://localhost:3010",
+
       "http://212.67.9.175:3000",
       "http://212.67.9.175:3001",
       "http://212.67.9.175:3002",
@@ -34,7 +35,10 @@
       "http://212.67.9.175:3007",
       "http://212.67.9.175:3008",
       "http://212.67.9.175:3009",
-      "http://212.67.9.175:3010"
+      "http://212.67.9.175:3010",
+
+      "http://10.192.9.150:3000",
+      "http://10.192.9.150:3001"
     ],
     "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"],
     "allow_headers": ["Origin", "Content-Type", "Authorization"],

@@ -16,21 +16,21 @@ func NewGroupRepository(db *gorm.DB) *GroupRepository {
 
 func (r *GroupRepository) Create(group *models.Group) error {
 	log.Printf("Создание группы: %s", group.Name)
-	return r.DB.Create(group).Error
+	return TranslateGormError(r.DB.Create(group).Error)
 }
 
 func (r *GroupRepository) GetByID(id uint) (*models.Group, error) {
 	var group models.Group
 	if err := r.DB.Preload("Owner").First(&group, id).Error; err != nil {
-		return nil, err
+		return nil, TranslateGormError(err)
 	}
 	return &group, nil
 }
 
 func (r *GroupRepository) Update(group *models.Group) error {
-	return r.DB.Save(group).Error
+	return TranslateGormError(r.DB.Save(group).Error)
 }
 
 func (r *GroupRepository) Delete(id uint) error {
-	return r.DB.Delete(&models.Group{}, id).Error
+	return TranslateGormError(r.DB.Delete(&models.Group{}, id).Error)
 }

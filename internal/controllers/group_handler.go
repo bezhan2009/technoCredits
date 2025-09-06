@@ -6,6 +6,7 @@ import (
 	"technoCredits/internal/app/models"
 	"technoCredits/internal/app/service"
 	"technoCredits/internal/controllers/middlewares"
+	"technoCredits/pkg/errs"
 
 	"github.com/gin-gonic/gin"
 )
@@ -97,14 +98,14 @@ func UpdateGroup(c *gin.Context) {
 
 	var group models.Group
 	if err := c.ShouldBindJSON(&group); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		HandleError(c, errs.ErrValidationFailed)
 		return
 	}
 
 	group.ID = uint(id)
 
 	if err := groupService.Update(&group); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		HandleError(c, err)
 		return
 	}
 
@@ -125,12 +126,12 @@ func DeleteGroup(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверный ID"})
+		HandleError(c, err)
 		return
 	}
 
 	if err := groupService.Delete(uint(id)); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		HandleError(c, err)
 		return
 	}
 

@@ -20,7 +20,7 @@ func NewGroupMemberService(repo *repository.GroupMemberRepository) *GroupMemberS
 	return &GroupMemberService{repo: repo}
 }
 
-func (s *GroupMemberService) AddMember(groupID uint, userID uint, role string) error {
+func (s *GroupMemberService) AddMember(groupID uint, userID uint, role uint) error {
 	members, err := s.repo.GetByGroupID(groupID)
 	if err != nil {
 		return err
@@ -34,7 +34,7 @@ func (s *GroupMemberService) AddMember(groupID uint, userID uint, role string) e
 	member := &models.GroupMember{
 		GroupID:  groupID,
 		UserID:   userID,
-		Role:     role,
+		RoleID:   role,
 		JoinedAt: time.Now(),
 	}
 
@@ -45,7 +45,7 @@ func (s *GroupMemberService) GetMembers(groupID uint) ([]models.GroupMember, err
 	return s.repo.GetByGroupID(groupID)
 }
 
-func (s *GroupMemberService) UpdateMemberRole(groupID uint, userID uint, role string) error {
+func (s *GroupMemberService) UpdateMemberRole(groupID uint, userID uint, role uint) error {
 	return s.repo.UpdateRole(groupID, userID, role)
 }
 
