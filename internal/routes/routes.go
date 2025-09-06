@@ -30,14 +30,6 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		profile.PATCH("", controllers.UpdateUser)
 		profile.PATCH("/password", controllers.UpdateUsersPassword)
 	}
-	//
-	//groupRoutes := r.Group("/groups", middlewares.CheckUserAuthentication)
-	//{
-	//	groupRoutes.POST("/", controllers.CreateGroup)
-	//	groupRoutes.GET("/:id", controllers.GetGroupByID)
-	//	groupRoutes.PUT("/:id", controllers.UpdateGroup)
-	//	groupRoutes.DELETE("/:id", controllers.DeleteGroup)
-	//}
 
 	// Protected routes (require authentication)
 	api := r.Group("")
@@ -60,12 +52,40 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 			payers.DELETE("/:id", controllers.DeleteCardExpensePayer)
 		}
 
-		// Card expense users routes
 		users := api.Group("/cards/users")
 		{
 			users.POST("", controllers.CreateCardExpenseUser)
 			users.PATCH("/:id", controllers.UpdateCardExpenseUser)
 			users.DELETE("/:id", controllers.DeleteCardExpenseUser)
+		}
+
+		// Groups routes
+		groups := api.Group("/groups")
+		{
+			groups.GET("", controllers.GetGroupsUser)
+			groups.POST("", controllers.CreateGroup)
+
+			// Отдельная группа для операций с конкретной группой
+			group := groups.Group("/:group_id")
+			{
+				group.GET("", controllers.GetGroupByID)
+				group.PUT("", controllers.UpdateGroup)
+				group.DELETE("", controllers.DeleteGroup)
+
+				// Участники конкретной группы
+				members := group.Group("/members")
+				{
+					members.GET("", controllers.GetGroupMembersByGroupID)
+					members.POST("", controllers.CreateGroupMember)
+				}
+			}
+		}
+
+		// Отдельные операции с участниками (по ID участника)
+		groupMembers := api.Group("/group-members")
+		{
+			groupMembers.PUT("/:id", controllers.UpdateGroupMember)
+			groupMembers.DELETE("/:id", controllers.DeleteGroupMember)
 		}
 	}
 
