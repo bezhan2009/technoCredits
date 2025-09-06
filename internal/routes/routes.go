@@ -49,5 +49,18 @@ func InitRoutes(r *gin.Engine, db *gorm.DB) *gin.Engine {
 		members.PUT("/:userID", groupMemberHandler.UpdateMemberRole)
 		members.DELETE("/:userID", groupMemberHandler.RemoveMember)
 	}
+
+	settlementsRepo := repository.NewSettlementRepository(db)
+	settlementsSrv := service.NewSettlementService(settlementsRepo)
+	settlementsHandler := controllers.NewSettlementHandler(settlementsSrv)
+
+	settlements := groupRoutes.Group("/:id/settlements", middlewares.CheckUserAuthentication)
+	{
+		settlements.POST("/", settlementsHandler.Create)
+		settlements.POST("/", settlementsHandler.GetAll)
+		settlements.PUT("/:id", settlementsHandler.Update)
+		settlements.DELETE("/:id", settlementsHandler.Delete)
+	}
+
 	return r
 }
