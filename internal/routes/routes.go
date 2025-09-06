@@ -7,6 +7,7 @@ import (
 	_ "technoCredits/docs"
 	"technoCredits/internal/controllers"
 	"technoCredits/internal/controllers/middlewares"
+	"technoCredits/internal/controllers/websockets"
 )
 
 func InitRoutes(r *gin.Engine) *gin.Engine {
@@ -100,6 +101,8 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 			settlements.DELETE("/:id", controllers.DeleteSettlement)
 		}
 	}
+
+	r.GET("/notifications", middlewares.CheckUserAuthentication, websockets.RealTimeNotificationReader)
 
 	return r
 }

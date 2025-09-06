@@ -59,6 +59,16 @@ func GetCardExpenseByID(userID, cardExpenseID uint) (card models.CardsExpense, e
 	return card, nil
 }
 
+func GetCardExpenseByIDOnly(cardExpenseID uint) (card models.CardsExpense, err error) {
+	if err = db.GetDBConn().Where("id = ?", cardExpenseID).First(&card).Error; err != nil {
+		logger.Error.Printf("[repository.GetCardExpenseByIDOnly] Error while getting card by id %v: %v", cardExpenseID, err)
+
+		return models.CardsExpense{}, TranslateGormError(err)
+	}
+
+	return card, nil
+}
+
 func CheckCardAmountLimit(userID uint, cardExpenseID uint, paying float64) (models.CardsExpense, error) {
 	card, err := GetCardExpenseByID(userID, cardExpenseID)
 	if err != nil {
