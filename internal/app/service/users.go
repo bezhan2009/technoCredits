@@ -10,7 +10,7 @@ import (
 )
 
 func CreateUser(user models.User) (uint, error) {
-	usernameExists, err := repository.UserExists(user.Username)
+	usernameExists, emailExists, err := repository.UserExists(user.Username, user.Email)
 	if err != nil {
 		return 0, fmt.Errorf("failed to check existing user: %w", err)
 	}
@@ -23,6 +23,12 @@ func CreateUser(user models.User) (uint, error) {
 		logger.Error.Printf("[service.CreateUser] user with username %s already exists", user.Username)
 
 		return 0, errs.ErrUsernameUniquenessFailed
+	}
+
+	if emailExists {
+		logger.Error.Printf("user with email %s already exists", user.Email)
+
+		return 0, errs.ErrEmailUniquenessFailed
 	}
 
 	user.Password = utils.GenerateHash(user.Password)
