@@ -1,11 +1,9 @@
 package models
 
-// ErrorResponse represents an error message response
 type ErrorResponse struct {
 	Error string `json:"error"`
 }
 
-// DefaultResponse represents a default message response
 type DefaultResponse struct {
 	Message string `json:"message"`
 }
@@ -17,7 +15,6 @@ type TokenResponse struct {
 	UserID       uint   `json:"user_id"`
 }
 
-// RefreshTokenResponse represents the response with access token and user ID
 type RefreshTokenResponse struct {
 	AccessToken string `json:"access_token"`
 }

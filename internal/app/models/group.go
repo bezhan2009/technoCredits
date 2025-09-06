@@ -2,7 +2,6 @@ package models
 
 import "time"
 
-// Group представляет таблицу groups.
 type Group struct {
 	ID        uint   `gorm:"primaryKey"`
 	Name      string `gorm:"type:varchar(255);not null"`
@@ -13,7 +12,6 @@ type Group struct {
 	GroupMembers []GroupMember `gorm:"foreignKey:GroupID"`
 }
 
-// GroupMember представляет таблицу groups_member, которая является связующей таблицей для отношений многие ко многим.
 type GroupMember struct {
 	GroupID  uint      `gorm:"primaryKey;autoIncrement:false"`
 	UserID   uint      `gorm:"primaryKey;autoIncrement:false"`
