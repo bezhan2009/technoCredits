@@ -70,7 +70,7 @@ func InitRoutes(r *gin.Engine, db *gorm.DB) *gin.Engine {
 	settlements := groupRoutes.Group("/:id/settlements", middlewares.CheckUserAuthentication)
 	{
 		settlements.POST("/", settlementsHandler.Create)
-		settlements.POST("/", settlementsHandler.GetAll)
+		settlements.GET("/", settlementsHandler.GetAll)
 		settlements.PUT("/:id", settlementsHandler.Update)
 		settlements.DELETE("/:id", settlementsHandler.Delete)
 	}
