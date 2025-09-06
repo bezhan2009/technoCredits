@@ -22,3 +22,8 @@ type RefreshTokenResponse struct {
 type RefreshRequest struct {
 	RefreshToken string `json:"refresh_token"`
 }
+
+type NewUsersPassword struct {
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+}
