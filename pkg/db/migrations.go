@@ -33,8 +33,11 @@ func Migrate() error {
 
 	err = seeds.SeedRoles(dbConn)
 	if err != nil {
-		logger.Error.Printf("[db.Migrate] Error seeding roles: %v", err)
+		return err
+	}
 
+	err = seeds.SeedAdmins(dbConn)
+	if err != nil {
 		return err
 	}
 
