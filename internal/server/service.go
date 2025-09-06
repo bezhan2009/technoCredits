@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"technoCredits/internal/routes"
 	"technoCredits/internal/security"
+	"technoCredits/pkg/brokers"
 	"technoCredits/pkg/db"
 	"technoCredits/pkg/logger"
 )
@@ -52,6 +53,14 @@ func ServiceShutdown() {
 		strErr := fmt.Sprintf("Error closing database connection: %s", err.Error())
 		fmt.Println(red(strErr))
 		logger.Error.Println(strErr)
+	}
+
+	err = brokers.CloseRabbitMQ()
+	if err != nil {
+		strErr := fmt.Sprintf("Error closing rabbitmq connection: %s", err.Error())
+		fmt.Println(red(strErr))
+		logger.Error.Println(strErr)
+		return
 	}
 
 	if err = mainServer.Shutdown(context.Background()); err != nil {

@@ -1,8 +1,10 @@
 package service
 
 import (
+	"fmt"
 	"technoCredits/internal/app/models"
 	"technoCredits/internal/repository"
+	"technoCredits/pkg/brokers"
 )
 
 func GetAllCardsUser(month, year, userID, afterID int, search string) (cards []models.CardsExpense, err error) {
@@ -21,8 +23,34 @@ func CreateCardExpensePayer(expense models.CardsExpensePayer) (err error) {
 	return repository.CreateCardExpensePayer(expense)
 }
 
-func CreateCardExpenseUser(user models.CardsExpenseUser) (err error) {
-	return repository.CreateCardExpenseUser(user)
+func CreateCardExpenseUser(cardUser models.CardsExpenseUser, userID uint) (err error) {
+	user, err := repository.GetUserByID(userID)
+	if err != nil {
+		return err
+	}
+
+	card, err := repository.GetCardExpenseByIDOnly(cardUser.CardsExpenseID)
+	if err != nil {
+		return err
+	}
+
+	group, err := repository.GetAllUserGroupsByIDOnly(card.GroupID)
+	if err != nil {
+		return err
+	}
+
+	queueName := fmt.Sprintf("user_%d_queue", group.OwnerID)
+
+	err = brokers.SendMessageToQueue(queueName,
+		fmt.Sprintf("Пользователь %s оплатил за карту %s: %v %s",
+			user.Username, card.Description, cardUser.PaidAmount, card.Currency,
+		),
+	)
+	if err != nil {
+		return err
+	}
+
+	return repository.CreateCardExpenseUser(cardUser)
 }
 
 func UpdateCardExpense(expense models.CardsExpense) (err error) {

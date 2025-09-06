@@ -41,6 +41,18 @@ func GetAllUserGroupsByID(userID uint, id uint) (models.Group, error) {
 	return group, nil
 }
 
+func GetAllUserGroupsByIDOnly(id uint) (models.Group, error) {
+	var group models.Group
+	err := db.GetDBConn().Where("id = ?", id).First(&group).Error
+	if err != nil {
+		logger.Error.Printf("[repository.GetAllUserGroupsByID] Error when get group members: %v", err)
+
+		return models.Group{}, TranslateGormError(err)
+	}
+
+	return group, nil
+}
+
 func CreateGroup(tx *gorm.DB, group models.Group) (id uint, err error) {
 	if err = tx.Model(&models.Group{}).Create(&group).Error; err != nil {
 		logger.Error.Printf("[repository.CreateGroup] Error when create group: %v", err)
