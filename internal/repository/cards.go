@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"technoCredits/internal/app/models"
 	"technoCredits/pkg/db"
 	"technoCredits/pkg/logger"
@@ -58,6 +59,32 @@ func GetCardExpenseByID(userID, cardExpenseID uint) (card models.CardsExpense, e
 	return card, nil
 }
 
+func CheckCardAmountLimit(userID uint, cardExpenseID uint, paying float64) (models.CardsExpense, error) {
+	card, err := GetCardExpenseByID(userID, cardExpenseID)
+	if err != nil {
+		return models.CardsExpense{}, TranslateGormError(err)
+	}
+
+	// Получаем запись из базы
+	var payers []models.CardsExpensePayer
+	if err := db.GetDBConn().Model(&models.CardsExpensePayer{}).Where("id = ?", cardExpenseID).First(&payers).Error; err != nil {
+		logger.Error.Printf("[CheckCardAmountLimit] Error while getting card by id %v: %v", cardExpenseID, err)
+		return models.CardsExpense{}, err
+	}
+
+	resAmount := 0.0
+	for _, payer := range payers {
+		resAmount += payer.PaidAmount
+	}
+
+	// Проверяем amount относительно динамического лимита
+	if card.TotalAmount < resAmount+paying { // <- card.Limit динамический лимит
+		return models.CardsExpense{}, TranslateGormError(errors.New("<Не превышайте сумму>"))
+	}
+
+	return card, nil
+}
+
 func CreateCardExpense(expense models.CardsExpense) (err error) {
 	if err = db.GetDBConn().Create(&expense).Error; err != nil {
 		logger.Error.Printf("[repository.CreateCardExpense] Error while creating card expense: %v", err)
@@ -69,6 +96,11 @@ func CreateCardExpense(expense models.CardsExpense) (err error) {
 }
 
 func CreateCardExpensePayer(expense models.CardsExpensePayer) (err error) {
+	_, err = CheckCardAmountLimit(expense.UserID, expense.CardsExpenseID, expense.PaidAmount)
+	if err != nil {
+		return TranslateGormError(err)
+	}
+
 	if err = db.GetDBConn().Create(&expense).Error; err != nil {
 		logger.Error.Printf("[repository.CreateCardExpensePayer] Error while creating card expense: %v", err)
 
