@@ -8,6 +8,8 @@ type Group struct {
 	OwnerID   uint   `gorm:"not null"`
 	Owner     User   `gorm:"foreignKey:OwnerID"`
 	CreatedAt time.Time
+
+	GroupMembers []GroupMember `gorm:"foreignKey:GroupID"`
 }
 
 type GroupMember struct {
