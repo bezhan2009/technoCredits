@@ -31,7 +31,7 @@ func ServiceStart() (err error) {
 
 	mainServer = new(Server)
 	go func() {
-		if err = mainServer.Run(security.AppSettings.AppParams.PortRun, routes.InitRoutes(router)); err != nil &&
+		if err = mainServer.Run(security.AppSettings.AppParams.PortRun, routes.InitRoutes(router, db.GetDBConn())); err != nil &&
 			!errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("Error while starting HTTP Service: %s", err)
 		}
