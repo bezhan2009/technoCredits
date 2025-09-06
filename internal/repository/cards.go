@@ -44,6 +44,16 @@ func GetAllCardsUser(month, year, userID, afterID int, search string) (cards []m
 	return cards, nil
 }
 
+func GetCardExpenseByID(userID, cardExpenseID uint) (card models.CardsExpense, err error) {
+	if err = db.GetDBConn().Where("user_id = ? AND id = ?", userID, cardExpenseID).First(&card).Error; err != nil {
+		logger.Error.Printf("[repository.GetCardExpenseByID] Error while getting card by id %v: %v", cardExpenseID, err)
+
+		return models.CardsExpense{}, TranslateGormError(err)
+	}
+
+	return card, nil
+}
+
 func CreateCardExpense(expense models.CardsExpense) (err error) {
 	if err = db.GetDBConn().Create(&expense).Error; err != nil {
 		logger.Error.Printf("[repository.CreateCardExpense] Error while creating card expense: %v", err)
