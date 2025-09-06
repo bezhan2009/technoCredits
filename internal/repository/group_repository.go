@@ -1,36 +1,25 @@
 package repository
 
 import (
-	"gorm.io/gorm"
-	"log"
 	"technoCredits/internal/app/models"
+	"technoCredits/pkg/db"
+	"technoCredits/pkg/logger"
 )
 
-type GroupRepository struct {
-	DB *gorm.DB
-}
+func GetAllUserGroups(userID uint) (group models.Group, err error) {
+	if err = db.GetDBConn().
+		Preload("GroupMembers").
+		Preload("GroupMembers.Users").
+		Joins("JOIN group_members ON group_members.group_id = cards_expenses.group_id").
+		Where("group_members.user_id = ?", userID).Error; err != nil {
+		logger.Error.Printf("[repository.GetAllUserGroups] Error when get group members: %v", err)
 
-func NewGroupRepository(db *gorm.DB) *GroupRepository {
-	return &GroupRepository{DB: db}
-}
-
-func (r *GroupRepository) Create(group *models.Group) error {
-	log.Printf("Создание группы: %s", group.Name)
-	return TranslateGormError(r.DB.Create(group).Error)
-}
-
-func (r *GroupRepository) GetByID(id uint) (*models.Group, error) {
-	var group models.Group
-	if err := r.DB.Preload("Owner").First(&group, id).Error; err != nil {
-		return nil, TranslateGormError(err)
+		return group, TranslateGormError(err)
 	}
-	return &group, nil
+
+	return group, nil
 }
 
-func (r *GroupRepository) Update(group *models.Group) error {
-	return TranslateGormError(r.DB.Save(group).Error)
-}
-
-func (r *GroupRepository) Delete(id uint) error {
-	return TranslateGormError(r.DB.Delete(&models.Group{}, id).Error)
-}
+//func CreateGroup(userID uint, group models.Group) (models.Group, error) {
+//
+//}

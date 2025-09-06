@@ -10,8 +10,7 @@ import (
 )
 
 var (
-	dbConn     *gorm.DB
-	userDBConn *gorm.DB
+	dbConn *gorm.DB
 )
 
 func ConnectToDB() error {
