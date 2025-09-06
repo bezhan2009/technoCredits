@@ -64,10 +64,8 @@ func GetAllUsers(search string) (users []models.User, err error) {
 		query = query.Where(`
 			users.username ILIKE ? OR 
 			users.email ILIKE ? OR 
-			users.first_name ILIKE ? OR 
-			users.last_name ILIKE ? OR 
-			roles.name ILIKE ?`,
-			searchPattern, searchPattern, searchPattern, searchPattern, searchPattern,
+			users.full_name ILIKE ?`,
+			searchPattern, searchPattern, searchPattern,
 		)
 	}
 

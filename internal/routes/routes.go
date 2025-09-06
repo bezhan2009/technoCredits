@@ -24,6 +24,8 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		auth.POST("/refresh", controllers.RefreshToken)
 	}
 
+	r.GET("/users", controllers.GetAllUsers)
+
 	profile := r.Group("/profile", middlewares.CheckUserAuthentication)
 	{
 		profile.GET("", controllers.GetMyDataUser)
@@ -86,6 +88,16 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		{
 			groupMembers.PUT("/:id", controllers.UpdateGroupMember)
 			groupMembers.DELETE("/:id", controllers.DeleteGroupMember)
+		}
+
+		// Settlements routes
+		settlements := api.Group("/settlements")
+		{
+			settlements.GET("", controllers.GetAllSettlements)
+			settlements.POST("", controllers.CreateSettlement)
+			settlements.GET("/:id", controllers.GetSettlementByID)
+			settlements.PUT("/:id", controllers.UpdateSettlement)
+			settlements.DELETE("/:id", controllers.DeleteSettlement)
 		}
 	}
 

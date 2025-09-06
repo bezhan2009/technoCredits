@@ -3,38 +3,29 @@ package service
 import (
 	"technoCredits/internal/app/models"
 	"technoCredits/internal/repository"
-	"technoCredits/pkg/logger"
 )
 
-type SettlementService struct {
-	repo *repository.SettlementRepository
+// SettlementCreate создает новое расчетное соглашение
+func SettlementCreate(settlement *models.Settlement) error {
+	return repository.SettlementCreate(settlement)
 }
 
-func NewSettlementService(repo *repository.SettlementRepository) *SettlementService {
-	return &SettlementService{repo: repo}
+// GetSettlementByID возвращает расчетное соглашение по ID
+func GetSettlementByID(id uint) (*models.Settlement, error) {
+	return repository.GetSettlementByID(id)
 }
 
-func (s *SettlementService) Create(settlement *models.Settlement) error {
-	logger.Info.Printf("[service.Settlement.Create] creating settlement for GroupID=%d", settlement.GroupID)
-	return s.repo.Create(settlement)
+// GetAllSettlements возвращает все расчетные соглашения
+func GetAllSettlements() ([]models.Settlement, error) {
+	return repository.GetAllSettlements()
 }
 
-func (s *SettlementService) GetByID(id uint) (*models.Settlement, error) {
-	logger.Info.Printf("[service.Settlement.GetByID] fetching settlement ID=%d", id)
-	return s.repo.GetByID(id)
+// UpdateSettlements обновляет расчетное соглашение
+func UpdateSettlements(settlement *models.Settlement) error {
+	return repository.UpdateSettlements(settlement)
 }
 
-func (s *SettlementService) GetAll() ([]models.Settlement, error) {
-	logger.Info.Println("[service.Settlement.GetAll] fetching all settlements")
-	return s.repo.GetAll()
-}
-
-func (s *SettlementService) Update(settlement *models.Settlement) error {
-	logger.Info.Printf("[service.Settlement.Update] updating settlement ID=%d", settlement.ID)
-	return s.repo.Update(settlement)
-}
-
-func (s *SettlementService) Delete(id uint) error {
-	logger.Info.Printf("[service.Settlement.Delete] deleting settlement ID=%d", id)
-	return s.repo.Delete(id)
+// DeleteSettlement удаляет расчетное соглашение по ID
+func DeleteSettlement(id uint) error {
+	return repository.DeleteSettlement(id)
 }

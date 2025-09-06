@@ -1,60 +1,66 @@
 package repository
 
 import (
-	"gorm.io/gorm"
 	"technoCredits/internal/app/models"
+	"technoCredits/pkg/db"
 	"technoCredits/pkg/logger"
 )
 
-type SettlementRepository struct {
-	db *gorm.DB
-}
+func SettlementCreate(settlement *models.Settlement) error {
+	if err := db.GetDBConn().Create(settlement).Error; err != nil {
+		logger.Error.Printf("[repository.SettlementCreate] error: %v", err)
 
-func NewSettlementRepository(db *gorm.DB) *SettlementRepository {
-	return &SettlementRepository{db: db}
-}
-
-func (r *SettlementRepository) Create(settlement *models.Settlement) error {
-	if err := r.db.Create(settlement).Error; err != nil {
-		logger.Error.Printf("[repository.Settlement.Create] error: %v", err)
 		return TranslateGormError(err)
 	}
-	logger.Info.Printf("[repository.Settlement.Create] created settlement ID=%d", settlement.ID)
+
+	logger.Info.Printf("[repository.SettlementCreate] created settlement ID=%d", settlement.ID)
+
 	return nil
 }
 
-func (r *SettlementRepository) GetByID(id uint) (*models.Settlement, error) {
+func GetSettlementByID(id uint) (*models.Settlement, error) {
 	var settlement models.Settlement
-	if err := r.db.First(&settlement, id).Error; err != nil {
-		logger.Error.Printf("[repository.Settlement.GetByID] error: %v", err)
+	if err := db.GetDBConn().Preload("FromUser").
+		First(&settlement, id).Error; err != nil {
+		logger.Error.Printf("[repository.GetSettlementByID] error: %v", err)
+
 		return nil, TranslateGormError(err)
 	}
+
 	return &settlement, nil
 }
 
-func (r *SettlementRepository) GetAll() ([]models.Settlement, error) {
+func GetAllSettlements() ([]models.Settlement, error) {
 	var settlements []models.Settlement
-	if err := r.db.Find(&settlements).Error; err != nil {
-		logger.Error.Printf("[repository.Settlement.GetAll] error: %v", err)
+	if err := db.GetDBConn().Preload("FromUser").Find(&settlements).Error; err != nil {
+		logger.Error.Printf("[repository.GetAllSettlements] error: %v", err)
+
 		return nil, TranslateGormError(err)
 	}
+
 	return settlements, nil
 }
 
-func (r *SettlementRepository) Update(settlement *models.Settlement) error {
-	if err := r.db.Save(settlement).Error; err != nil {
-		logger.Error.Printf("[repository.Settlement.Update] error: %v", err)
+func UpdateSettlements(settlement *models.Settlement) error {
+	if err := db.GetDBConn().Where("id = ?", settlement.ID).Updates(settlement).Error; err != nil {
+		logger.Error.Printf("[repository.UpdateSettlements] error: %v", err)
+
 		return TranslateGormError(err)
 	}
-	logger.Info.Printf("[repository.Settlement.Update] updated settlement ID=%d", settlement.ID)
+
+	logger.Info.Printf("[repository.UpdateSettlements] updated settlement ID=%d", settlement.ID)
+
 	return nil
 }
 
-func (r *SettlementRepository) Delete(id uint) error {
-	if err := r.db.Delete(&models.Settlement{}, id).Error; err != nil {
-		logger.Error.Printf("[repository.Settlement.Delete] error: %v", err)
+func DeleteSettlement(id uint) error {
+	if err := db.GetDBConn().Delete(&models.Settlement{}, id).Error; err != nil {
+		logger.Error.Printf("[repository.DeleteSettlement] error: %v", err)
+
 		return TranslateGormError(err)
 	}
-	logger.Info.Printf("[repository.Settlement.Delete] deleted settlement ID=%d", id)
+
+	logger.Info.Printf("[repository.DeleteSettlement] deleted settlement ID=%d", id)
+
 	return nil
 }

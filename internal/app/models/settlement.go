@@ -11,7 +11,7 @@ type Settlement struct {
 	ToUserID   uint    `json:"to_user_id" gorm:"not null"`
 	ToUser     User    `json:"-" gorm:"foreignKey:ToUserID"`
 	Amount     float64 `json:"amount" gorm:"type:numeric"`
-	Currency   string  `json:"currency" gorm:"type:varchar(10)"`
+	Currency   string  `json:"currency" gorm:"type:varchar(10);default:TJS"`
 	CreatedAt  time.Time
 	Note       string `json:"note" gorm:"type:text"`
 }

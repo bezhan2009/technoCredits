@@ -9,16 +9,7 @@ import (
 	"technoCredits/internal/app/service"
 )
 
-// SettlementHandler обрабатывает CRUD для Settlement
-type SettlementHandler struct {
-	service *service.SettlementService
-}
-
-func NewSettlementHandler(service *service.SettlementService) *SettlementHandler {
-	return &SettlementHandler{service: service}
-}
-
-// Create Settlement
+// CreateSettlement godoc
 // @Summary      Create settlement
 // @Description  Create a new settlement record
 // @Tags         settlements
@@ -28,15 +19,16 @@ func NewSettlementHandler(service *service.SettlementService) *SettlementHandler
 // @Success      201  {object}  models.Settlement
 // @Failure      400  {object}  map[string]string
 // @Failure      500  {object}  map[string]string
+// @Security ApiKeyAuth
 // @Router       /settlements [post]
-func (h *SettlementHandler) Create(c *gin.Context) {
+func CreateSettlement(c *gin.Context) {
 	var settlement models.Settlement
 	if err := c.ShouldBindJSON(&settlement); err != nil {
 		HandleError(c, err)
 		return
 	}
 
-	if err := h.service.Create(&settlement); err != nil {
+	if err := service.SettlementCreate(&settlement); err != nil {
 		HandleError(c, err)
 		return
 	}
@@ -44,7 +36,7 @@ func (h *SettlementHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, settlement)
 }
 
-// GetByID Settlement
+// GetSettlementByID godoc
 // @Summary      Get settlement by ID
 // @Description  Get a settlement record by ID
 // @Tags         settlements
@@ -52,10 +44,16 @@ func (h *SettlementHandler) Create(c *gin.Context) {
 // @Param        id   path      int  true  "Settlement ID"
 // @Success      200  {object}  models.Settlement
 // @Failure      404  {object}  map[string]string
+// @Security ApiKeyAuth
 // @Router       /settlements/{id} [get]
-func (h *SettlementHandler) GetByID(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	settlement, err := h.service.GetByID(uint(id))
+func GetSettlementByID(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		HandleError(c, err)
+		return
+	}
+
+	settlement, err := service.GetSettlementByID(uint(id))
 	if err != nil {
 		HandleError(c, err)
 		return
@@ -63,16 +61,17 @@ func (h *SettlementHandler) GetByID(c *gin.Context) {
 	c.JSON(http.StatusOK, settlement)
 }
 
-// GetAll Settlements
+// GetAllSettlements godoc
 // @Summary      Get all settlements
 // @Description  Get a list of all settlements
 // @Tags         settlements
 // @Produce      json
 // @Success      200  {array}   models.Settlement
 // @Failure      500  {object}  map[string]string
+// @Security ApiKeyAuth
 // @Router       /settlements [get]
-func (h *SettlementHandler) GetAll(c *gin.Context) {
-	settlements, err := h.service.GetAll()
+func GetAllSettlements(c *gin.Context) {
+	settlements, err := service.GetAllSettlements()
 	if err != nil {
 		HandleError(c, err)
 		return
@@ -80,7 +79,7 @@ func (h *SettlementHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, settlements)
 }
 
-// Update Settlement
+// UpdateSettlement godoc
 // @Summary      Update settlement
 // @Description  Update a settlement record
 // @Tags         settlements
@@ -91,17 +90,23 @@ func (h *SettlementHandler) GetAll(c *gin.Context) {
 // @Success      200  {object}  models.Settlement
 // @Failure      400  {object}  map[string]string
 // @Failure      500  {object}  map[string]string
+// @Security ApiKeyAuth
 // @Router       /settlements/{id} [put]
-func (h *SettlementHandler) Update(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+func UpdateSettlement(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		HandleError(c, err)
+		return
+	}
+
 	var settlement models.Settlement
-	if err := c.ShouldBindJSON(&settlement); err != nil {
+	if err = c.ShouldBindJSON(&settlement); err != nil {
 		HandleError(c, err)
 		return
 	}
 
 	settlement.ID = uint(id)
-	if err := h.service.Update(&settlement); err != nil {
+	if err = service.UpdateSettlements(&settlement); err != nil {
 		HandleError(c, err)
 		return
 	}
@@ -109,17 +114,23 @@ func (h *SettlementHandler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, settlement)
 }
 
-// Delete Settlement
+// DeleteSettlement godoc
 // @Summary      Delete settlement
 // @Description  Delete a settlement record by ID
 // @Tags         settlements
 // @Param        id   path      int  true  "Settlement ID"
 // @Success      200  {object}  map[string]string
 // @Failure      500  {object}  map[string]string
+// @Security ApiKeyAuth
 // @Router       /settlements/{id} [delete]
-func (h *SettlementHandler) Delete(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	if err := h.service.Delete(uint(id)); err != nil {
+func DeleteSettlement(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		HandleError(c, err)
+		return
+	}
+
+	if err := service.DeleteSettlement(uint(id)); err != nil {
 		HandleError(c, err)
 		return
 	}
