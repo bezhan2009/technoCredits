@@ -6,7 +6,7 @@ import (
 	"technoCredits/pkg/db"
 )
 
-func GetGroupMembersByGroupID(groupID uint) (groupMembers models.GroupMember, err error) {
+func GetGroupMembersByGroupID(groupID uint) (groupMembers []models.GroupMember, err error) {
 	return repository.GetGroupMembersByGroupID(groupID)
 }
 

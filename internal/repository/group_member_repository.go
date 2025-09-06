@@ -7,11 +7,11 @@ import (
 	"technoCredits/pkg/logger"
 )
 
-func GetGroupMembersByGroupID(groupID uint) (groupMembers models.GroupMember, err error) {
-	if err = db.GetDBConn().Model(&models.GroupMember{}).Where("group_id = ?", groupID).First(&groupMembers).Error; err != nil {
+func GetGroupMembersByGroupID(groupID uint) (groupMembers []models.GroupMember, err error) {
+	if err = db.GetDBConn().Model(&models.GroupMember{}).Where("group_id = ?", groupID).Find(&groupMembers).Error; err != nil {
 		logger.Error.Printf("[repository.GetGroupMembersByGroupID] Error finding group member by group id %v: %v", groupID, err)
 
-		return models.GroupMember{}, TranslateGormError(err)
+		return nil, TranslateGormError(err)
 	}
 
 	return groupMembers, nil
