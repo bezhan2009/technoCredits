@@ -39,4 +39,5 @@ type CardsExpenseUser struct {
 	ShareAmount    float64      `json:"share_amount" gorm:"type:numeric"`
 	PaidAmount     float64      `json:"paid_amount" gorm:"type:numeric"`
 	PaidAt         time.Time    `json:"paid_at" gorm:"autoCreateTime"`
+	Comment        string       `json:"comment" gorm:"type:text"`
 }
