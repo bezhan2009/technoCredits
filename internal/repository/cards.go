@@ -84,7 +84,7 @@ func CheckCardAmountLimit(userID uint, cardExpenseID uint, paying float64) (mode
 	}
 
 	if card.TotalAmount < resAmount+paying {
-		return models.CardsExpense{}, errs.ErrinsufficientFunds
+		return models.CardsExpense{}, errs.ErrInsufficientFunds
 	}
 
 	return card, nil

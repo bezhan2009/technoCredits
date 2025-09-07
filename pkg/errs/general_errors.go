@@ -17,7 +17,6 @@ var (
 	ErrInvalidMonth          = errors.New("ErrInvalidMonth")
 	ErrInvalidYear           = errors.New("ErrInvalidYear")
 	ErrNoCourseFound         = errors.New("ErrNoCourseFound")
-	ErrinsufficientFunds     = errors.New("ErrinsufficientFunds")
 	ErrNoVacancyFound        = errors.New("ErrNoVacancyFound")
 	ErrNoUsersStatisticFound = errors.New("ErrNoUsersStatisticFound")
 )
