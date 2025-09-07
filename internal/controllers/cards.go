@@ -172,17 +172,13 @@ func CreateCardExpensePayer(c *gin.Context) {
 // @Success 200 {object} models.DefaultResponse "Участник успешно добавлен"
 // @Router /cards/users [post]
 func CreateCardExpenseUser(c *gin.Context) {
-	userID := c.GetUint(middlewares.UserIDCtx)
-
 	var cardsExpenseUser models.CardsExpenseUser
 	if err := c.ShouldBind(&cardsExpenseUser); err != nil {
 		HandleError(c, errs.ErrValidationFailed)
 		return
 	}
 
-	cardsExpenseUser.UserID = userID
-
-	err := service.CreateCardExpenseUser(cardsExpenseUser, userID)
+	err := service.CreateCardExpenseUser(cardsExpenseUser, cardsExpenseUser.UserID)
 	if err != nil {
 		HandleError(c, err)
 		return
@@ -218,7 +214,7 @@ func UpdateCardExpense(c *gin.Context) {
 	}
 
 	cardsExpense.ID = uint(cardID)
-	err = service.UpdateCardExpense(cardsExpense)
+	err = service.UpdateCardExpense(cardsExpense, c.GetUint(middlewares.UserIDCtx))
 	if err != nil {
 		HandleError(c, err)
 		return
