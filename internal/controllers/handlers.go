@@ -66,6 +66,7 @@ func handleBadRequestErrors(err error) bool {
 		errors.Is(err, errs.ErrInvalidTitle) ||
 		errors.Is(err, errs.ErrOrderAlreadyPayed) ||
 		errors.Is(err, errs.ErrInvalidDescription) ||
+		errors.Is(err, errs.ErrInsufficientFunds) ||
 		errors.Is(err, errs.ErrInvalidAmount) ||
 		errors.Is(err, errs.ErrInvalidQuantity) ||
 		errors.Is(err, errs.ErrInsufficientFunds)
@@ -73,7 +74,8 @@ func handleBadRequestErrors(err error) bool {
 
 // Обработка ошибок, которые приводят к статусу 404 (Not Found)
 func handleNotFoundErrors(err error) bool {
-	return errors.Is(err, errs.ErrRecordNotFound)
+	return errors.Is(err, errs.ErrRecordNotFound) ||
+		errors.Is(err, errs.ErrGroupNotFound)
 }
 
 // Обработка ошибок, которые приводят к статусу 401 (Unauthorized)

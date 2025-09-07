@@ -26,6 +26,7 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 	}
 
 	r.GET("/users", controllers.GetAllUsers)
+	r.GET("/users/:id", controllers.GetUserByID)
 
 	profile := r.Group("/profile", middlewares.CheckUserAuthentication)
 	{

@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"errors"
 	"technoCredits/internal/app/models"
 	"technoCredits/pkg/db"
+	"technoCredits/pkg/errs"
 	"technoCredits/pkg/logger"
 )
 
@@ -46,13 +46,10 @@ func GetAllCardsUser(month, year, userID, afterID int, search string) (cards []m
 }
 
 func GetCardExpenseByID(userID, cardExpenseID uint) (card models.CardsExpense, err error) {
-	if err = db.GetDBConn().Where("id = ?", cardExpenseID).
-		Preload("Group").
-		Preload("Group.Owner").
-		Joins("JOIN group_members ON group_members.group_id = cards_expenses.group_id").
-		Where("group_members.user_id = ?", userID).First(&card).Error; err != nil {
+	if err = db.GetDBConn().
+		Where("cards_expenses.id = ?", cardExpenseID).
+		First(&card).Error; err != nil {
 		logger.Error.Printf("[repository.GetCardExpenseByID] Error while getting card by id %v: %v", cardExpenseID, err)
-
 		return models.CardsExpense{}, TranslateGormError(err)
 	}
 
@@ -87,13 +84,18 @@ func CheckCardAmountLimit(userID uint, cardExpenseID uint, paying float64) (mode
 	}
 
 	if card.TotalAmount < resAmount+paying {
-		return models.CardsExpense{}, TranslateGormError(errors.New("<Не превышайте сумму>"))
+		return models.CardsExpense{}, errs.ErrinsufficientFunds
 	}
 
 	return card, nil
 }
 
 func CreateCardExpense(expense models.CardsExpense) (err error) {
+	_, err = GetAllUserGroupsByIDOnly(expense.GroupID)
+	if err != nil {
+		return errs.ErrGroupNotFound
+	}
+
 	if err = db.GetDBConn().Create(&expense).Error; err != nil {
 		logger.Error.Printf("[repository.CreateCardExpense] Error while creating card expense: %v", err)
 

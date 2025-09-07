@@ -70,6 +70,6 @@
   },
   "auth_params": {
     "jwt_secret_key": "",
-    "jwt_ttl_minutes": 60
+    "jwt_ttl_minutes": 120
   }
 }
