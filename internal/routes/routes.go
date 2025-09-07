@@ -43,6 +43,7 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		cards := api.Group("/cards")
 		{
 			cards.GET("", controllers.GetAllCardsUser)
+			cards.GET("/:id", controllers.GetAllCardsUserByID)
 			cards.POST("", controllers.CreateCardExpense)
 			cards.PATCH("/:id", controllers.UpdateCardExpense)
 			cards.DELETE("/:id", controllers.DeleteCardExpense)

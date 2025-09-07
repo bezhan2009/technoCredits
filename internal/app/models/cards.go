@@ -26,7 +26,7 @@ type CardsExpensePayer struct {
 	UserID         uint         `gorm:"not null"`
 	User           User         `json:"-" gorm:"foreignKey:UserID"`
 	PaidAmount     float64      `json:"paid_amount" gorm:"type:numeric"`
-	PaidAt         time.Time    `json:"paid_at"`
+	PaidAt         time.Time    `json:"paid_at" gorm:"autoCreateTime"`
 }
 
 type CardsExpenseUser struct {
@@ -38,5 +38,5 @@ type CardsExpenseUser struct {
 	User           User         `json:"-" gorm:"foreignKey:UserID"`
 	ShareAmount    float64      `json:"share_amount" gorm:"type:numeric"`
 	PaidAmount     float64      `json:"paid_amount" gorm:"type:numeric"`
-	PaidAt         time.Time    `json:"paid_at"`
+	PaidAt         time.Time    `json:"paid_at" gorm:"autoCreateTime"`
 }
