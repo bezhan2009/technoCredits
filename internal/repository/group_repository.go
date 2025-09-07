@@ -10,6 +10,7 @@ import (
 func GetAllUserGroups(userID uint) ([]models.Group, error) {
 	var groups []models.Group
 	err := db.GetDBConn().
+		Preload("Owner").
 		Preload("GroupMembers").
 		Preload("GroupMembers.User").
 		Joins("JOIN group_members ON group_members.group_id = groups.id").
@@ -27,6 +28,7 @@ func GetAllUserGroups(userID uint) ([]models.Group, error) {
 func GetAllUserGroupsByID(userID uint, id uint) (models.Group, error) {
 	var group models.Group
 	err := db.GetDBConn().
+		Preload("Owner").
 		Preload("GroupMembers").
 		Preload("GroupMembers.User").
 		Joins("JOIN group_members ON group_members.group_id = groups.id").
