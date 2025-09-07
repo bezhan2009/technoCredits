@@ -7,7 +7,7 @@ import (
 	"technoCredits/pkg/logger"
 )
 
-func GetAllCardsUser(month, year, userID, afterID int, search string) (cards []models.CardsExpense, err error) {
+func GetAllCardsUser(month, year, userID, afterID int, search string, groupIDFilter int, userIDFilter int) (cards []models.CardsExpense, err error) {
 	dbConn := db.GetDBConn().Model(&models.CardsExpense{}).
 		Preload("CardsExpensePayers").
 		Preload("CardsExpenseUsers").
@@ -19,6 +19,20 @@ func GetAllCardsUser(month, year, userID, afterID int, search string) (cards []m
 		Where("group_members.user_id = ?", userID).
 		Where("EXTRACT(MONTH FROM cards_expenses.created_at) = ? AND EXTRACT(YEAR FROM cards_expenses.created_at) = ?", month, year).
 		Where("cards_expenses.id > ?", afterID)
+
+	if groupIDFilter > 0 {
+		dbConn = dbConn.Where("cards_expenses.group_id = ?", groupIDFilter)
+	}
+
+	if userIDFilter > 0 {
+		dbConn = dbConn.Joins(`
+			LEFT JOIN cards_expense_payers ON cards_expense_payers.cards_expense_id = cards_expenses.id
+		`).Joins(`
+			LEFT JOIN cards_expense_users ON cards_expense_users.cards_expense_id = cards_expenses.id
+		`).Where(`
+			cards_expense_payers.user_id = ? OR cards_expense_users.user_id = ?
+		`, userIDFilter, userIDFilter)
+	}
 
 	if search != "" {
 		likeStr := "%" + search + "%"

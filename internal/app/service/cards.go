@@ -7,8 +7,8 @@ import (
 	"technoCredits/pkg/brokers"
 )
 
-func GetAllCardsUser(month, year, userID, afterID int, search string) (cards []models.CardsExpense, err error) {
-	return repository.GetAllCardsUser(month, year, userID, afterID, search)
+func GetAllCardsUser(month, year, userID, afterID int, search string, groupIDFilter int, userIDFilter int) (cards []models.CardsExpense, err error) {
+	return repository.GetAllCardsUser(month, year, userID, afterID, search, groupIDFilter, userIDFilter)
 }
 
 func GetCardExpenseByID(userID, cardExpenseID uint) (card models.CardsExpense, err error) {

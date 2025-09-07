@@ -28,7 +28,6 @@ func ConnectToRabbitMq(params models.RabbitParams) error {
 func connect(params models.RabbitParams) error {
 	var err error
 
-	// Закрываем предыдущее соединение если есть
 	if RabbitConn != nil {
 		RabbitConn.Close()
 	}
@@ -44,7 +43,6 @@ func connect(params models.RabbitParams) error {
 		return fmt.Errorf("failed to open channel: %v", err)
 	}
 
-	// Обрабатываем закрытие соединения
 	go func() {
 		<-RabbitConn.NotifyClose(make(chan *amqp.Error))
 		logger.Info.Println("RabbitMQ connection closed, attempting to reconnect...")

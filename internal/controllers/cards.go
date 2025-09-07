@@ -21,6 +21,8 @@ import (
 // @Param year query int true "Год (например: 2024)"
 // @Param after query string false "ID для пагинации (получить записи после указанного ID)"
 // @Param search query string false "Поиск по описанию или именам пользователей"
+// @Param group_id query int false "Фильтр по ID группы"
+// @Param user_id query int false "Фильтр по ID пользователя"
 // @Security ApiKeyAuth
 // @Success 200 {array} models.CardsExpense "Список карт расходов"
 // @Router /cards [get]
@@ -32,11 +34,26 @@ func GetAllCardsUser(c *gin.Context) {
 		afterIDStr = "0"
 	}
 
-	search := c.Query("after")
-
 	afterID, err := strconv.Atoi(afterIDStr)
 	if err != nil {
 		HandleError(c, errs.ErrInvalidAfterID)
+		return
+	}
+
+	search := c.Query("search")
+
+	groupIDFilterStr := c.Query("group_id")
+	userIDFilterStr := c.Query("user_id")
+
+	groupIDFilter, err := strconv.Atoi(groupIDFilterStr)
+	if err != nil {
+		HandleError(c, errs.ErrValidationFailed)
+		return
+	}
+
+	userIDFilter, err := strconv.Atoi(userIDFilterStr)
+	if err != nil {
+		HandleError(c, errs.ErrValidationFailed)
 		return
 	}
 
@@ -52,7 +69,7 @@ func GetAllCardsUser(c *gin.Context) {
 		return
 	}
 
-	cardsExpense, err := service.GetAllCardsUser(month, year, int(userID), afterID, search)
+	cardsExpense, err := service.GetAllCardsUser(month, year, int(userID), afterID, search, groupIDFilter, userIDFilter)
 	if err != nil {
 		HandleError(c, err)
 		return
