@@ -115,7 +115,7 @@ func CheckCardAmountLimit(userID uint, cardExpenseID uint, paying float64) (mode
 	}
 
 	var payers []models.CardsExpensePayer
-	if err = db.GetDBConn().Model(&models.CardsExpensePayer{}).Where("id = ?", cardExpenseID).First(&payers).Error; err != nil {
+	if err = db.GetDBConn().Model(&models.CardsExpensePayer{}).Where("cards_expense_id = ?", cardExpenseID).Find(&payers).Error; err != nil {
 		logger.Error.Printf("[CheckCardAmountLimit] Error while getting card by id %v: %v", cardExpenseID, err)
 		return models.CardsExpense{}, err
 	}

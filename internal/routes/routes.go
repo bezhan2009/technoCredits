@@ -104,7 +104,7 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		}
 	}
 
-	r.GET("/notifications", middlewares.CheckUserAuthentication, websockets.RealTimeNotificationReader)
+	r.GET("/notifications", middlewares.CheckUserAuthenticationQuery, websockets.RealTimeNotificationReader)
 
 	return r
 }

@@ -39,53 +39,104 @@ func CreateCardExpenseUser(cardUser models.CardsExpenseUser, userID uint) (err e
 		return err
 	}
 
+	cardUsers, err := repository.GetCardExpenseUsersByCardExpenseID(card.ID)
+	if err != nil {
+		return err
+	}
+
 	group, err := repository.GetAllUserGroupsByIDOnly(card.GroupID)
 	if err != nil {
 		return err
 	}
 
-	queueName := fmt.Sprintf("user_%d_queue", group.OwnerID)
-
-	err = brokers.SendMessageToQueue(queueName,
-		fmt.Sprintf("Пользователь %s оплатил за карту %s: %v %s",
-			user.Username, card.Description, cardUser.PaidAmount, card.Currency,
-		),
-	)
-	if err != nil {
-		return err
+	res := 0.0
+	for _, cardUserEx := range cardUsers {
+		res = cardUserEx.PaidAmount
 	}
 
-	cardPayer, err := repository.GetCardExpensePayerByUserIDAndCardID(card.ID, userID)
-	if err != nil {
-		return err
+	if (res+cardUser.PaidAmount) == card.TotalAmount || (res+cardUser.PaidAmount) > card.TotalAmount {
+		cardPayer, err := repository.GetCardExpensePayerByUserIDAndCardID(card.ID, userID)
+		if err != nil {
+			return err
+		}
+
+		cardUser.ShareAmount = cardPayer.PaidAmount - cardUser.PaidAmount
+
+		cardUser.PaidAt = time.Now()
+
+		err = repository.CreateCardExpenseUser(cardUser)
+		if err != nil {
+			return err
+		}
+
+		err = repository.SettlementCreate(
+			&models.Settlement{
+				GroupID:    card.GroupID,
+				FromUserID: userID,
+				ToUserID:   group.OwnerID,
+				Amount:     cardUser.PaidAmount,
+				Currency:   "TJS",
+				Note:       "",
+			},
+		)
+		if err != nil {
+			return err
+		}
+
+		queueName := fmt.Sprintf("user_%d_queue", group.OwnerID)
+
+		err = brokers.SendMessageToQueue(queueName,
+			fmt.Sprintf("Пользователь %s оплатил за карту %s: %v %s        %d",
+				user.Username, card.Description, cardUser.PaidAmount, card.Currency, userID,
+			),
+		)
+		if err != nil {
+			return err
+		}
 	}
 
-	cardUser.ShareAmount = cardPayer.PaidAmount - cardUser.PaidAmount
+	if (res + cardUser.PaidAmount) > card.TotalAmount {
+		dutyUsers := []models.CardsExpenseUser{}
+		sumOfDuty := 0.0
+		for _, cardUserEx := range cardUsers {
+			if cardUserEx.ShareAmount < 0 {
+				dutyUsers = append(dutyUsers, cardUserEx)
+				sumOfDuty += cardUserEx.ShareAmount
+			}
+		}
 
-	cardUser.PaidAt = time.Now()
-	//
-	//cardUsers, err := repository.GetCardExpenseUsersByCardExpenseID(card.ID)
-	//if err != nil {
-	//	return err
-	//}
+		for _, dutyUser := range dutyUsers {
+			queueName := fmt.Sprintf("user_%d_queue", dutyUser.UserID)
 
-	err = repository.CreateCardExpenseUser(cardUser)
-	if err != nil {
-		return err
+			cardUser.PaidAmount += dutyUser.ShareAmount
+
+			err = brokers.SendMessageToQueue(queueName,
+				fmt.Sprintf("Пользователь %s оплатил за долг карты %s: %v %s        %d",
+					user.Username, card.Description, cardUser.PaidAmount, card.Currency, userID,
+				),
+			)
+			if err != nil {
+				return err
+			}
+
+			err = repository.SettlementCreate(
+				&models.Settlement{
+					GroupID:    group.ID,
+					FromUserID: userID,
+					ToUserID:   dutyUser.UserID,
+					Amount:     cardUser.PaidAmount,
+					Currency:   "TJS",
+					Note:       fmt.Sprintf("Оплачен долг за карту %s", card.Description),
+				},
+			)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
-	err = repository.SettlementCreate(
-		&models.Settlement{
-			GroupID:    card.GroupID,
-			FromUserID: userID,
-			ToUserID:   group.OwnerID,
-			Amount:     cardUser.PaidAmount,
-			Currency:   "TJS",
-			Note:       "",
-		},
-	)
-	if err != nil {
-		return err
+	if (res + cardUser.PaidAmount) < card.TotalAmount {
+
 	}
 
 	return nil
