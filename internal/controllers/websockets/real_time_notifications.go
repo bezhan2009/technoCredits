@@ -35,11 +35,11 @@ func RealTimeNotificationReader(c *gin.Context) {
 	}
 	conn.WriteJSON(welcomeMsg)
 
-	consumerName := fmt.Sprintf("user_%d_ws_consumer", userID)
+	//consumerName := fmt.Sprintf("user_%d_ws_consumer", userID)
 
 	msgs, err := brokers.RabbitChannel.Consume(
 		queueName,
-		consumerName,
+		"",
 		false,
 		false,
 		false,
