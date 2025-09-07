@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -58,8 +57,6 @@ func CheckUserAuthentication(c *gin.Context) {
 
 func CheckUserAuthenticationQuery(c *gin.Context) {
 	header := c.Query(tokenQueryParam)
-
-	fmt.Println(header)
 
 	if header == "" {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
