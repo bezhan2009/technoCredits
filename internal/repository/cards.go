@@ -59,12 +59,40 @@ func GetAllCardsUser(month, year, userID, afterID int, search string, groupIDFil
 	return cards, nil
 }
 
+func GetAllCardsUserByID(cardID uint) (cards []models.CardsExpense, err error) {
+	dbConn := db.GetDBConn().Model(&models.CardsExpense{}).
+		Preload("CardsExpensePayers").
+		Preload("CardsExpenseUsers").
+		Preload("CardsExpensePayers.User").
+		Preload("CardsExpenseUsers.User").
+		Preload("Group").
+		Preload("Group.Owner").Where("id = ?", cardID)
+
+	if err = dbConn.Find(&cards).Error; err != nil {
+		logger.Error.Printf("[repository.GetAllCardsUserByID] Error while getting all cards users: %v", err)
+
+		return nil, TranslateGormError(err)
+	}
+
+	return cards, nil
+}
+
 func GetCardExpenseByID(userID, cardExpenseID uint) (card models.CardsExpense, err error) {
 	if err = db.GetDBConn().
 		Where("cards_expenses.id = ?", cardExpenseID).
 		First(&card).Error; err != nil {
 		logger.Error.Printf("[repository.GetCardExpenseByID] Error while getting card by id %v: %v", cardExpenseID, err)
 		return models.CardsExpense{}, TranslateGormError(err)
+	}
+
+	return card, nil
+}
+
+func GetCardExpenseUsersByCardExpenseID(cardExpenseID uint) (card []models.CardsExpenseUser, err error) {
+	if err = db.GetDBConn().Model(&models.CardsExpense{}).Where("cards_expense_id = ?", cardExpenseID).Find(&card).Error; err != nil {
+		logger.Error.Printf("[repository.GetCardExpenseUserByCardExpenseID] Error while getting card by id %v: %v", cardExpenseID, err)
+
+		return nil, TranslateGormError(err)
 	}
 
 	return card, nil
@@ -132,6 +160,16 @@ func CreateCardExpensePayer(expense models.CardsExpensePayer) (err error) {
 	}
 
 	return nil
+}
+
+func GetCardExpensePayerByUserIDAndCardID(cardID, userID uint) (expense models.CardsExpensePayer, err error) {
+	if err = db.GetDBConn().Model(&models.CardsExpensePayer{}).Where("cards_expense_id = ? AND user_id = ?", cardID, userID).First(&expense).Error; err != nil {
+		logger.Error.Printf("[repository.GetCardExpensePayerByUserIDAndCardID Error: %v", err)
+
+		return models.CardsExpensePayer{}, TranslateGormError(err)
+	}
+
+	return expense, nil
 }
 
 func CreateCardExpenseUser(user models.CardsExpenseUser) (err error) {

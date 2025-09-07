@@ -5,6 +5,7 @@ import (
 	"technoCredits/internal/app/models"
 	"technoCredits/internal/repository"
 	"technoCredits/pkg/brokers"
+	"time"
 )
 
 func GetAllCardsUser(month, year, userID, afterID int, search string, groupIDFilter int, userIDFilter int) (cards []models.CardsExpense, err error) {
@@ -13,6 +14,10 @@ func GetAllCardsUser(month, year, userID, afterID int, search string, groupIDFil
 
 func GetCardExpenseByID(userID, cardExpenseID uint) (card models.CardsExpense, err error) {
 	return repository.GetCardExpenseByID(userID, cardExpenseID)
+}
+
+func GetAllCardsUserByID(cardID uint) (cards []models.CardsExpense, err error) {
+	return repository.GetAllCardsUserByID(cardID)
 }
 
 func CreateCardExpense(expense models.CardsExpense) (err error) {
@@ -50,7 +55,40 @@ func CreateCardExpenseUser(cardUser models.CardsExpenseUser, userID uint) (err e
 		return err
 	}
 
-	return repository.CreateCardExpenseUser(cardUser)
+	cardPayer, err := repository.GetCardExpensePayerByUserIDAndCardID(card.ID, userID)
+	if err != nil {
+		return err
+	}
+
+	cardUser.ShareAmount = cardPayer.PaidAmount - cardUser.PaidAmount
+
+	cardUser.PaidAt = time.Now()
+	//
+	//cardUsers, err := repository.GetCardExpenseUsersByCardExpenseID(card.ID)
+	//if err != nil {
+	//	return err
+	//}
+
+	err = repository.CreateCardExpenseUser(cardUser)
+	if err != nil {
+		return err
+	}
+
+	err = repository.SettlementCreate(
+		&models.Settlement{
+			GroupID:    card.GroupID,
+			FromUserID: userID,
+			ToUserID:   group.OwnerID,
+			Amount:     cardUser.PaidAmount,
+			Currency:   "TJS",
+			Note:       "",
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func UpdateCardExpense(expense models.CardsExpense) (err error) {

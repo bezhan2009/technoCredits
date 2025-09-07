@@ -22,5 +22,6 @@ type GroupMember struct {
 	RoleID uint `json:"role_id" gorm:"not null"`
 	Role   Role `json:"-" gorm:"foreignKey:RoleID"`
 
-	JoinedAt time.Time `gorm:"not null"`
+	JoinedAt  time.Time `gorm:"not null;autoCreateTime"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 }

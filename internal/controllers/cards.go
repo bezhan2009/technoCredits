@@ -78,6 +78,33 @@ func GetAllCardsUser(c *gin.Context) {
 	c.JSON(http.StatusOK, cardsExpense)
 }
 
+// GetAllCardsUserByID godoc
+// @Summary Получить все карты расходов пользователя по id
+// @Description Возвращает список карт расходов пользователя за указанный месяц и год с возможностью поиска и по id
+// @Tags Карты расходов
+// @Accept  json
+// @Produce  json
+// @Param id path int true "ID карты расходов"
+// @Security ApiKeyAuth
+// @Success 200 {array} models.CardsExpense "Список карт расходов"
+// @Router /cards/{id} [get]
+func GetAllCardsUserByID(c *gin.Context) {
+	IDStr := c.Param("id")
+	cardID, err := strconv.Atoi(IDStr)
+	if err != nil {
+		HandleError(c, errs.ErrInvalidID)
+		return
+	}
+
+	cardsExpense, err := service.GetAllCardsUserByID(uint(cardID))
+	if err != nil {
+		HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, cardsExpense)
+}
+
 // CreateCardExpense godoc
 // @Summary Создать новую карту расходов
 // @Description Создает новую карту расходов для группы пользователей
