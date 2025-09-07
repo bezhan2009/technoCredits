@@ -89,7 +89,7 @@ func GetCardExpenseByID(userID, cardExpenseID uint) (card models.CardsExpense, e
 }
 
 func GetCardExpenseUsersByCardExpenseID(cardExpenseID uint) (card []models.CardsExpenseUser, err error) {
-	if err = db.GetDBConn().Model(&models.CardsExpense{}).Where("cards_expense_id = ?", cardExpenseID).Find(&card).Error; err != nil {
+	if err = db.GetDBConn().Model(&models.CardsExpenseUser{}).Where("cards_expense_id = ?", cardExpenseID).Find(&card).Error; err != nil {
 		logger.Error.Printf("[repository.GetCardExpenseUserByCardExpenseID] Error while getting card by id %v: %v", cardExpenseID, err)
 
 		return nil, TranslateGormError(err)

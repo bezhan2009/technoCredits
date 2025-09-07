@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"math"
 	"technoCredits/internal/app/models"
 	"technoCredits/internal/repository"
 	"technoCredits/pkg/brokers"
@@ -51,10 +52,12 @@ func CreateCardExpenseUser(cardUser models.CardsExpenseUser, userID uint) (err e
 
 	res := 0.0
 	for _, cardUserEx := range cardUsers {
-		res = cardUserEx.PaidAmount
+		res += cardUserEx.PaidAmount
 	}
 
-	if (res+cardUser.PaidAmount) == card.TotalAmount || (res+cardUser.PaidAmount) > card.TotalAmount {
+	fmt.Println(res + cardUser.PaidAmount)
+
+	if res+cardUser.PaidAmount == card.TotalAmount || res+cardUser.PaidAmount < card.TotalAmount {
 		cardPayer, err := repository.GetCardExpensePayerByUserIDAndCardID(card.ID, userID)
 		if err != nil {
 			return err
@@ -74,7 +77,7 @@ func CreateCardExpenseUser(cardUser models.CardsExpenseUser, userID uint) (err e
 				GroupID:    card.GroupID,
 				FromUserID: userID,
 				ToUserID:   group.OwnerID,
-				Amount:     cardUser.PaidAmount,
+				Amount:     math.Abs(cardUser.PaidAmount),
 				Currency:   "TJS",
 				Note:       "",
 			},
@@ -95,7 +98,7 @@ func CreateCardExpenseUser(cardUser models.CardsExpenseUser, userID uint) (err e
 		}
 	}
 
-	if (res + cardUser.PaidAmount) > card.TotalAmount {
+	if res+cardUser.PaidAmount > card.TotalAmount {
 		dutyUsers := []models.CardsExpenseUser{}
 		sumOfDuty := 0.0
 		for _, cardUserEx := range cardUsers {
@@ -124,7 +127,7 @@ func CreateCardExpenseUser(cardUser models.CardsExpenseUser, userID uint) (err e
 					GroupID:    group.ID,
 					FromUserID: userID,
 					ToUserID:   dutyUser.UserID,
-					Amount:     cardUser.PaidAmount,
+					Amount:     math.Abs(cardUser.PaidAmount),
 					Currency:   "TJS",
 					Note:       fmt.Sprintf("Оплачен долг за карту %s", card.Description),
 				},
@@ -133,10 +136,6 @@ func CreateCardExpenseUser(cardUser models.CardsExpenseUser, userID uint) (err e
 				return err
 			}
 		}
-	}
-
-	if (res + cardUser.PaidAmount) < card.TotalAmount {
-
 	}
 
 	return nil

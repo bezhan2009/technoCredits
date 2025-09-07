@@ -180,6 +180,8 @@ func CreateCardExpenseUser(c *gin.Context) {
 		return
 	}
 
+	cardsExpenseUser.UserID = userID
+
 	err := service.CreateCardExpenseUser(cardsExpenseUser, userID)
 	if err != nil {
 		HandleError(c, err)
