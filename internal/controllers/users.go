@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"technoCredits/internal/app/models"
 	"technoCredits/internal/app/service"
 	"technoCredits/internal/controllers/middlewares"
@@ -28,6 +29,23 @@ func GetMyDataUser(c *gin.Context) {
 	userID := c.GetUint(middlewares.UserIDCtx)
 
 	user, err := service.GetUserByID(userID)
+	if err != nil {
+		HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
+
+func GetUserByID(c *gin.Context) {
+	userIDStr := c.Param("id")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		HandleError(c, errs.ErrInvalidID)
+		return
+	}
+
+	user, err := service.GetUserByID(uint(userID))
 	if err != nil {
 		HandleError(c, err)
 		return
